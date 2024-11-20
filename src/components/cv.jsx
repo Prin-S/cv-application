@@ -21,7 +21,6 @@ function EducationInformation({ onSubmit }) {
                 <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" required /></label><br />
                 <button className="button" type="submit">Add</button>
             </form>
-            
         </div>
     );
 }
@@ -42,20 +41,43 @@ function LeftSide({ onGenChange, onEduSubmit }) {
     );
 }
 
-function RenderEducation({ item }) {
-    console.log(item.id);
+function EditEducationInformation({ item, onEduEdit }) {
     return (
-        <ul>
-            <li>{item.university}</li>
-            <li>{item.degree}</li>
-            <li>{item.field}</li>
-            <li>{item.start}</li>
-            <li>{item.end}</li>
-        </ul>
+        <div className="box form-box">
+            <form id={item.id} onSubmit={onEduEdit}>
+                <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
+                <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
+                <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
+                <label htmlFor="start">Start date: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
+                <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br />
+                <button className="button" type="submit">Save</button>
+            </form>
+        </div>
     );
 }
 
-function RightSide({ genText, eduText }) {
+function RenderEducation({ item, onEduEdit, onClick }) {
+    function editEduInfo() { // Hide the displayed information while it is being edited.
+        document.getElementById(item.id + '-1').style.display = 'none';
+        document.getElementById(item.id + '-2').style.display = 'block';
+    }
+
+    return (
+        <div>
+            <div id={item.id + '-1'}>
+                <h3>{item.university}</h3>
+                <p>{item.field} in {item.degree}</p>
+                <p>From {item.start} to {item.end}</p>
+                <button id={item.id} className="button" onClick={editEduInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button>
+            </div>
+            <div id={item.id + '-2'} style={{display: 'none'}}>
+                <EditEducationInformation item={item} onEduEdit={onEduEdit} />
+            </div>
+        </div>
+    );
+}
+
+function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
 
     return (
         <div className="container container-inner">
@@ -66,7 +88,7 @@ function RightSide({ genText, eduText }) {
             </div>
             <div className="box">
                 {eduText.map(item => {
-                    return <RenderEducation key={item.id} item={item} />;
+                    return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />;
                 })}
             </div>
         </div>
@@ -86,12 +108,36 @@ function CVContainer() {
         e.preventDefault();
         const newEduInfo = [ ...eduInfo, { id: crypto.randomUUID(), university: e.target[0].value, degree: e.target[1].value, field: e.target[2].value, start: e.target[3].value, end: e.target[4].value } ];
         setEduInfo(newEduInfo);
+        e.target.reset();
+    }
+
+    function handleEduInfoEdit(e) {
+        e.preventDefault();
+
+        // Hide the form and display the information.
+        document.getElementById(e.target.id + '-1').style.display = 'block';
+        document.getElementById(e.target.id + '-2').style.display = 'none';
+
+        const itemToEdit = eduInfo.find(item => item.id == e.target.id);
+        itemToEdit.university = e.target[0].value;
+        itemToEdit.degree = e.target[1].value;
+        itemToEdit.field = e.target[2].value;
+        itemToEdit.start = e.target[3].value;
+        itemToEdit.end = e.target[4].value;
+        
+        const newEduInfo = [ ...eduInfo.filter(item => item.id != e.target.id), itemToEdit ];
+        setEduInfo(newEduInfo);
+    }
+
+    function handleEduInfoDelete(e) {
+        const newEduInfo = eduInfo.filter(item => item.id != e.target.id );
+        setEduInfo(newEduInfo);
     }
 
     return (
         <div className="container">
             <LeftSide onGenChange={handleGenInfoChange} onEduSubmit={handleEduInfoSubmit} />
-            <RightSide genText={genInfo} eduText={eduInfo} />
+            <RightSide genText={genInfo} eduText={eduInfo} onEduEdit={handleEduInfoEdit} onEduDelete={handleEduInfoDelete} />
         </div>
     );
 }
