@@ -42,6 +42,11 @@ function LeftSide({ onGenChange, onEduSubmit }) {
 }
 
 function EditEducationInformation({ item, onEduEdit }) {
+    function cancelEditEduInfo() { // Hide the form and display the information.
+        document.getElementById(item.id + '-1').style.display = 'block';
+        document.getElementById(item.id + '-2').style.display = 'none';
+    }
+
     return (
         <div className="box form-box edit-box">
             <form id={item.id} onSubmit={onEduEdit}>
@@ -50,7 +55,7 @@ function EditEducationInformation({ item, onEduEdit }) {
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
                 <label htmlFor="start">Start year: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
                 <label htmlFor="end">End year: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br /><br />
-                <button className="button" type="submit">Save</button>
+                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditEduInfo}>Cancel</button>
             </form>
         </div>
     );
