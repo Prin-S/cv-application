@@ -48,8 +48,8 @@ function EditEducationInformation({ item, onEduEdit }) {
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
-                <label htmlFor="start">Start date: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
-                <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br />
+                <label htmlFor="start">Start year: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
+                <label htmlFor="end">End year: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br />
                 <button className="button" type="submit">Save</button>
             </form>
         </div>
@@ -107,6 +107,7 @@ function CVContainer() {
     function handleEduInfoSubmit(e) {
         e.preventDefault();
         const newEduInfo = [ ...eduInfo, { id: crypto.randomUUID(), university: e.target[0].value, degree: e.target[1].value, field: e.target[2].value, start: e.target[3].value, end: e.target[4].value } ];
+        newEduInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
         setEduInfo(newEduInfo);
         e.target.reset();
     }
@@ -118,7 +119,7 @@ function CVContainer() {
         document.getElementById(e.target.id + '-1').style.display = 'block';
         document.getElementById(e.target.id + '-2').style.display = 'none';
 
-        const itemToEdit = eduInfo.find(item => item.id == e.target.id);
+        const itemToEdit = eduInfo.find(item => item.id == e.target.id); // Update the existing entry.
         itemToEdit.university = e.target[0].value;
         itemToEdit.degree = e.target[1].value;
         itemToEdit.field = e.target[2].value;
@@ -126,6 +127,7 @@ function CVContainer() {
         itemToEdit.end = e.target[4].value;
         
         const newEduInfo = [ ...eduInfo.filter(item => item.id != e.target.id), itemToEdit ];
+        newEduInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
         setEduInfo(newEduInfo);
     }
 
