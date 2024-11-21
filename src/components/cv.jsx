@@ -18,7 +18,7 @@ function EducationInformation({ onSubmit }) {
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" required /></label><br />
                 <label htmlFor="start">Start date: <input id="start" className="input" type="text" name="start" required /></label><br />
-                <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" required /></label><br />
+                <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" required /></label><br /><br />
                 <button className="button" type="submit">Add</button>
             </form>
         </div>
@@ -43,13 +43,13 @@ function LeftSide({ onGenChange, onEduSubmit }) {
 
 function EditEducationInformation({ item, onEduEdit }) {
     return (
-        <div className="box form-box">
+        <div className="box form-box edit-box">
             <form id={item.id} onSubmit={onEduEdit}>
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
                 <label htmlFor="start">Start year: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
-                <label htmlFor="end">End year: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br />
+                <label htmlFor="end">End year: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br /><br />
                 <button className="button" type="submit">Save</button>
             </form>
         </div>
@@ -63,22 +63,23 @@ function RenderEducation({ item, onEduEdit, onClick }) {
     }
 
     return (
-        <div>
+        <>
             <div id={item.id + '-1'}>
-                <h3>{item.university}</h3>
-                <p>{item.field} in {item.degree}</p>
-                <p>From {item.start} to {item.end}</p>
-                <button id={item.id} className="button" onClick={editEduInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button>
+                <div className="each-entry">
+                    <h3 className="full">{item.university}</h3>
+                    <p className="one-fifth">{item.start}-{item.end}</p>
+                    <p className="four-fifths">{item.degree} in {item.field}</p>
+                    <div className="full"><button id={item.id} className="button" onClick={editEduInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button></div>
+                </div>
             </div>
             <div id={item.id + '-2'} style={{display: 'none'}}>
                 <EditEducationInformation item={item} onEduEdit={onEduEdit} />
             </div>
-        </div>
+        </>
     );
 }
 
 function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
-
     return (
         <div className="container container-inner">
             <div className="box">
@@ -88,7 +89,14 @@ function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
             </div>
             <div className="box">
                 {eduText.map(item => {
-                    return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />;
+                    if (item == eduText[eduText.length - 1]) {
+                        return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />;
+                    } else {
+                        return <>
+                            <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />
+                            <hr />
+                        </>;
+                    }
                 })}
             </div>
         </div>
