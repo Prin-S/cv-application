@@ -25,7 +25,23 @@ function EducationInformation({ onSubmit }) {
     );
 }
 
-function LeftSide({ onGenChange, onEduSubmit }) {
+function WorkInformation({ onSubmit }) {
+    return (
+        <div className="box form-box">
+            <h2>Work</h2>
+            <form onSubmit={onSubmit}>
+                <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" required /></label><br />
+                <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" required /></label><br />
+                <label htmlFor="description">Description: <input id="description" className="input" type="text" name="description" required /></label><br />
+                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" name="work-start" required /></label><br />
+                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" name="work-end" required /></label><br /><br />
+                <button className="button" type="submit">Add</button>
+            </form>
+        </div>
+    );
+}
+
+function LeftSide({ onGenChange, onEduSubmit, onWorkSubmit }) {
     return (
         <div className="container container-inner">
             <div className="box form-box">
@@ -37,6 +53,7 @@ function LeftSide({ onGenChange, onEduSubmit }) {
                 </form>
             </div>
             <EducationInformation onSubmit={onEduSubmit} />
+            <WorkInformation onSubmit={onWorkSubmit} />
         </div>
     );
 }
@@ -84,7 +101,51 @@ function RenderEducation({ item, onEduEdit, onClick }) {
     );
 }
 
-function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
+function EditWorkInformation({ item, onWorkEdit }) {
+    function cancelEditWorkInfo() { // Hide the form and display the information.
+        document.getElementById(item.id + '-1').style.display = 'block';
+        document.getElementById(item.id + '-2').style.display = 'none';
+    }
+
+    return (
+        <div className="box form-box edit-box">
+            <form id={item.id} onSubmit={onWorkEdit}>
+                <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" defaultValue={item.position} required /></label><br />
+                <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" defaultValue={item['com-org']} required /></label><br />
+                <label htmlFor="description">Description: <input id="description" className="input" type="text" name="description" defaultValue={item.description} required /></label><br />
+                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" name="work-start" defaultValue={item['work-start']} required /></label><br />
+                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" name="work-end" defaultValue={item['work-end']} required /></label><br /><br />
+                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditWorkInfo}>Cancel</button>
+            </form>
+        </div>
+    );
+}
+
+function RenderWork({ item, onWorkEdit, onClick }) {
+    function editWorkInfo() { // Hide the displayed information while it is being edited.
+        document.getElementById(item.id + '-1').style.display = 'none';
+        document.getElementById(item.id + '-2').style.display = 'block';
+    }
+
+    return (
+        <>
+            <div id={item.id + '-1'}>
+                <div className="each-entry">
+                    <h3 className="full">{item.position}</h3>
+                    <p className="one-fifth">{item['work-start']}-{item['work-end']}</p>
+                    <p className="four-fifths">{item['com-org']}</p>
+                    <p className="full">{item.description}</p>
+                    <div className="full"><button id={item.id} className="button" onClick={editWorkInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button></div>
+                </div>
+            </div>
+            <div id={item.id + '-2'} style={{display: 'none'}}>
+                <EditWorkInformation item={item} onWorkEdit={onWorkEdit} />
+            </div>
+        </>
+    );
+}
+
+function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkEdit, onWorkDelete }) {
     return (
         <div className="container container-inner">
             <div className="box">
@@ -104,6 +165,18 @@ function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
                     }
                 })}
             </div>
+            <div className="box">
+                {workText.map(item => {
+                    if (item == workText[workText.length - 1]) {
+                        return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onClick={onWorkDelete} />;
+                    } else {
+                        return <>
+                            <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onClick={onWorkDelete} />
+                            <hr />
+                        </>;
+                    }
+                })}
+            </div>
         </div>
     );
 }
@@ -111,6 +184,7 @@ function RightSide({ genText, eduText, onEduEdit, onEduDelete }) {
 function CVContainer() {
     const [genInfo, setGenInfo] = useState({ name: '', email: '', phone: '' });
     const [eduInfo, setEduInfo] = useState([]);
+    const [workInfo, setWorkInfo] = useState([]);
 
     function handleGenInfoChange(e) {
         const newGenInfo = { ...genInfo, [e.target.id]: e.target.value };
@@ -149,10 +223,54 @@ function CVContainer() {
         setEduInfo(newEduInfo);
     }
 
+    function handleWorkInfoSubmit(e) {
+        e.preventDefault();
+        const newWorkInfo = [ ...workInfo, { id: crypto.randomUUID(), position: e.target[0].value, 'com-org': e.target[1].value, description: e.target[2].value, 'work-start': e.target[3].value, 'work-end': e.target[4].value } ];
+        newWorkInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
+        setWorkInfo(newWorkInfo);
+        e.target.reset();
+    }
+
+    function handleWorkInfoEdit(e) {
+        e.preventDefault();
+
+        // Hide the form and display the information.
+        document.getElementById(e.target.id + '-1').style.display = 'block';
+        document.getElementById(e.target.id + '-2').style.display = 'none';
+
+        const itemToEdit = workInfo.find(item => item.id == e.target.id); // Update the existing entry.
+        itemToEdit.position = e.target[0].value;
+        itemToEdit['com-org'] = e.target[1].value;
+        itemToEdit.description = e.target[2].value;
+        itemToEdit['work-start'] = e.target[3].value;
+        itemToEdit['work-end'] = e.target[4].value;
+        
+        const newWorkInfo = [ ...workInfo.filter(item => item.id != e.target.id), itemToEdit ];
+        newWorkInfo.sort((a, b) => b['work-start'] - a['work-start']); // Sort the start year to show the latest year on top.
+        setWorkInfo(newWorkInfo);
+    }
+
+    function handleWorkInfoDelete(e) {
+        const newWorkInfo = workInfo.filter(item => item.id != e.target.id );
+        setWorkInfo(newWorkInfo);
+    }
+
     return (
         <div className="container">
-            <LeftSide onGenChange={handleGenInfoChange} onEduSubmit={handleEduInfoSubmit} />
-            <RightSide genText={genInfo} eduText={eduInfo} onEduEdit={handleEduInfoEdit} onEduDelete={handleEduInfoDelete} />
+            <LeftSide
+                onGenChange={handleGenInfoChange}
+                onEduSubmit={handleEduInfoSubmit}
+                onWorkSubmit={handleWorkInfoSubmit}
+            />
+            <RightSide
+                genText={genInfo}
+                eduText={eduInfo}
+                workText={workInfo}
+                onEduEdit={handleEduInfoEdit}
+                onEduDelete={handleEduInfoDelete}
+                onWorkEdit={handleWorkInfoEdit}
+                onWorkDelete={handleWorkInfoDelete}
+            />
         </div>
     );
 }

@@ -12,7 +12,7 @@
     }
 }
 
-@media (min-width: 992px) {  
+@media (min-width: 1280px) {  
     #root {
         width: 1280px;
     }
@@ -30,8 +30,8 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-h3 {
-    margin: 0;
+p, h3 {
+    margin: 5px 0;
 }
 
 hr {
@@ -130,6 +130,7 @@ hr {
 .button {
     border: thick double chocolate;
     width: fit-content;
+    margin: 5px 0;
     padding: 0px 5px;
 }
 
