@@ -1,6 +1,22 @@
 import { useState } from 'react';
 import '../styles/styles.css';
 
+const yearRegex = /(19|20)([0-9]{2})/;
+
+function checkStart(e) {
+    if (!e.target.value.match(yearRegex)) {
+        return e.target.setCustomValidity('Value must be 1900-2099.');
+    }
+    return e.target.setCustomValidity('');
+}
+
+function checkEnd(e) {
+    if (e.target.value == 'present' || e.target.value.match(yearRegex)) {
+        return e.target.setCustomValidity('');
+    }
+    return e.target.setCustomValidity('Value must be 1900-2099. Enter "present" if this is current.');      
+}
+
 function GeneralInformation({ id, text, type, onChange }) {
     return (
         <>
@@ -17,8 +33,8 @@ function EducationInformation({ onSubmit }) {
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" required /></label><br />
-                <label htmlFor="start">Start date: <input id="start" className="input" type="text" name="start" required /></label><br />
-                <label htmlFor="end">End date: <input id="end" className="input" type="text" name="end" required /></label><br /><br />
+                <label htmlFor="start">Start date: <input id="start" className="input" type="text" onChange={checkStart} name="start" required /></label><br />
+                <label htmlFor="end">End date: <input id="end" className="input" type="text" onChange={checkEnd} name="end" required /></label><br /><br />
                 <button className="button" type="submit">Add</button>
             </form>
         </div>
@@ -32,9 +48,9 @@ function WorkInformation({ onSubmit }) {
             <form onSubmit={onSubmit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" required /></label><br />
                 <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" required /></label><br />
-                <label htmlFor="description">Description: <input id="description" className="input" type="text" name="description" required /></label><br />
-                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" name="work-start" required /></label><br />
-                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" name="work-end" required /></label><br /><br />
+                <label htmlFor="description">Description: <textarea id="description" className="input" rows="4" name="description" required></textarea></label><br />
+                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" required /></label><br />
+                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" required /></label><br /><br />
                 <button className="button" type="submit">Add</button>
             </form>
         </div>
@@ -70,8 +86,8 @@ function EditEducationInformation({ item, onEduEdit }) {
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
-                <label htmlFor="start">Start year: <input id="start" className="input" type="text" name="start" defaultValue={item.start} required /></label><br />
-                <label htmlFor="end">End year: <input id="end" className="input" type="text" name="end" defaultValue={item.end} required /></label><br /><br />
+                <label htmlFor="start">Start year: <input id="start" className="input" type="text" onChange={checkStart} name="start" defaultValue={item.start} required /></label><br />
+                <label htmlFor="end">End year: <input id="end" className="input" type="text" onChange={checkEnd} name="end" defaultValue={item.end} required /></label><br /><br />
                 <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditEduInfo}>Cancel</button>
             </form>
         </div>
@@ -112,9 +128,9 @@ function EditWorkInformation({ item, onWorkEdit }) {
             <form id={item.id} onSubmit={onWorkEdit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" defaultValue={item.position} required /></label><br />
                 <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" defaultValue={item['com-org']} required /></label><br />
-                <label htmlFor="description">Description: <input id="description" className="input" type="text" name="description" defaultValue={item.description} required /></label><br />
-                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" name="work-start" defaultValue={item['work-start']} required /></label><br />
-                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" name="work-end" defaultValue={item['work-end']} required /></label><br /><br />
+                <label htmlFor="description">Description: <textarea id="description" className="input" rows="4" name="description" defaultValue={item.description} required></textarea></label><br />
+                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" defaultValue={item['work-start']} required /></label><br />
+                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" defaultValue={item['work-end']} required /></label><br /><br />
                 <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditWorkInfo}>Cancel</button>
             </form>
         </div>
@@ -226,7 +242,7 @@ function CVContainer() {
     function handleWorkInfoSubmit(e) {
         e.preventDefault();
         const newWorkInfo = [ ...workInfo, { id: crypto.randomUUID(), position: e.target[0].value, 'com-org': e.target[1].value, description: e.target[2].value, 'work-start': e.target[3].value, 'work-end': e.target[4].value } ];
-        newWorkInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
+        newWorkInfo.sort((a, b) => b['work-start'] - a['work-start']); // Sort the start year to show the latest year on top.
         setWorkInfo(newWorkInfo);
         e.target.reset();
     }
