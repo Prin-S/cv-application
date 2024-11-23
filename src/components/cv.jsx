@@ -1,4 +1,5 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useRef } from 'react';
+import { useReactToPrint } from "react-to-print";
 import { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo } from './helper.js';
 import '../styles/styles.css';
 
@@ -232,27 +233,36 @@ function CVContainer() {
         setWorkInfo(newWorkInfo);
     }
 
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        documentTitle: `CV - ${genInfo.name}`,
+        contentRef: componentRef,
+    });
+
     return (
-        <div className="container">
-            <div className="left-container">
-                <LeftSide
-                    onGenChange={handleGenInfoChange}
-                    onEduSubmit={handleEduInfoSubmit}
-                    onWorkSubmit={handleWorkInfoSubmit}
-                />
+        <>
+            <button className="button button-right" onClick={() => handlePrint()}>Print CV</button>
+            <div className="container">
+                <div className="left-container">
+                    <LeftSide
+                        onGenChange={handleGenInfoChange}
+                        onEduSubmit={handleEduInfoSubmit}
+                        onWorkSubmit={handleWorkInfoSubmit}
+                    />
+                </div>
+                <div className="right-container" ref={componentRef}>
+                    <RightSide
+                        genText={genInfo}
+                        eduText={eduInfo}
+                        workText={workInfo}
+                        onEduEdit={handleEduInfoEdit}
+                        onEduDelete={handleEduInfoDelete}
+                        onWorkEdit={handleWorkInfoEdit}
+                        onWorkDelete={handleWorkInfoDelete}
+                    />
+                </div>
             </div>
-            <div className="right-container">
-                <RightSide
-                    genText={genInfo}
-                    eduText={eduInfo}
-                    workText={workInfo}
-                    onEduEdit={handleEduInfoEdit}
-                    onEduDelete={handleEduInfoDelete}
-                    onWorkEdit={handleWorkInfoEdit}
-                    onWorkDelete={handleWorkInfoDelete}
-                />
-            </div>
-        </div>
+        </>
     );
 }
 
