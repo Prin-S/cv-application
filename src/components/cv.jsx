@@ -3,12 +3,20 @@ import { useReactToPrint } from "react-to-print";
 import { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo } from './helper.js';
 import '../styles/styles.css';
 
-function GeneralInformation({ id, text, type, onChange }) {
-    return (
-        <>
-            <label htmlFor={id}>{text}: <input id={id} className="input" type={type} name={id} onChange={onChange} /></label><br />
-        </>
-    );
+function GeneralInformation({ id, text, onChange }) {
+    if (id == 'about') {
+        return (
+            <>
+                <label htmlFor={id}>{text}: <textarea id={id} className="input" rows="4" name={id} onChange={onChange}></textarea></label><br />
+            </>
+        );
+    } else {
+        return (
+            <>
+                <label htmlFor={id}>{text}: <input id={id} className="input" type="text" name={id} onChange={onChange} /></label><br />
+            </>
+        );
+    }
 }
 
 function EducationInformation({ onEduSubmit }) {
@@ -49,9 +57,11 @@ function LeftSide({ onGenChange, onEduSubmit, onWorkSubmit }) {
             <div className="box text-left">
                 <h2>General Information</h2>
                 <form>
-                    <GeneralInformation id="name" text="Name" type="text" onChange={onGenChange} />
-                    <GeneralInformation id="email" text="Email" type="email" onChange={onGenChange} />
-                    <GeneralInformation id="phone" text="Phone number" type="tel" onChange={onGenChange} />
+                    <GeneralInformation id="name" text="Name" onChange={onGenChange} />
+                    <GeneralInformation id="email" text="Email" onChange={onGenChange} />
+                    <GeneralInformation id="phone" text="Phone number" onChange={onGenChange} />
+                    <GeneralInformation id="location" text="Location" onChange={onGenChange} />
+                    <GeneralInformation id="about" text="About" onChange={onGenChange} />
                 </form>
             </div>
             <EducationInformation onEduSubmit={onEduSubmit} />
@@ -132,8 +142,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
         <div className="container container-inner">
             <div className="box">
                 <h2>{genText.name}</h2>
-                <p>{genText.email}</p>
-                <p>{genText.phone}</p>
+                <p>✉️ {genText.email}</p>
+                <p>📞 {genText.phone}</p>
+                <p>📍 {genText.location}</p>
+                <p>🧐 {genText.about}</p>
             </div>
             <div className="box">
                 <h2>Education</h2>
@@ -166,7 +178,7 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
 }
 
 function CVContainer() {
-    const [genInfo, setGenInfo] = useState({ name: '', email: '', phone: '' });
+    const [genInfo, setGenInfo] = useState({ name: '', email: '', phone: '', location: '', about: '' });
     const [eduInfo, setEduInfo] = useState([]);
     const [workInfo, setWorkInfo] = useState([]);
 
