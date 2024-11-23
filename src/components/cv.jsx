@@ -1,6 +1,6 @@
 import { useState, Fragment, useRef } from 'react';
 import { useReactToPrint } from "react-to-print";
-import { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo } from './helper.js';
+import { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo, showOrHide } from './helper.js';
 import '../styles/styles.css';
 
 function GeneralInformation({ id, text, onChange }) {
@@ -85,7 +85,7 @@ function EditEducationInformation({ item, onEduEdit }) {
     );
 }
 
-function RenderEducation({ item, onEduEdit, onEduDelete }) {
+function RenderEducation({ item, onEduEdit, onEduDelete, buttonStatus }) {
     return (
         <>
             <div id={item.id + '-1'}>
@@ -93,7 +93,7 @@ function RenderEducation({ item, onEduEdit, onEduDelete }) {
                     <h3 className="full">{item.university}</h3>
                     <p className="one-fifth">{item['edu-start']}-{item['edu-end']}</p>
                     <p className="four-fifths">{item.degree} in {item.field}</p>
-                    <div className="full"><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onEduDelete}>x</button></div>
+                    <div className={buttonStatus}><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onEduDelete}>x</button></div>
                 </div>
             </div>
             <div id={item.id + '-2'} style={{display: 'none'}}>
@@ -118,7 +118,7 @@ function EditWorkInformation({ item, onWorkEdit }) {
     );
 }
 
-function RenderWork({ item, onWorkEdit, onWorkDelete }) {
+function RenderWork({ item, onWorkEdit, onWorkDelete, buttonStatus }) {
     return (
         <>
             <div id={item.id + '-1'}>
@@ -127,7 +127,7 @@ function RenderWork({ item, onWorkEdit, onWorkDelete }) {
                     <p className="one-fifth">{item['work-start']}-{item['work-end']}</p>
                     <p className="four-fifths">{item['com-org']}</p>
                     <p className="full">{item.description}</p>
-                    <div className="full"><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onWorkDelete}>x</button></div>
+                    <div className={buttonStatus}><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onWorkDelete}>x</button></div>
                 </div>
             </div>
             <div id={item.id + '-2'} style={{display: 'none'}}>
@@ -137,7 +137,9 @@ function RenderWork({ item, onWorkEdit, onWorkDelete }) {
     );
 }
 
-function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkEdit, onWorkDelete }) {
+function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkEdit, onWorkDelete, buttonToggle }) {
+    const buttonStatus = showOrHide(buttonToggle);
+
     return (
         <div className="container container-inner">
             <div className="box">
@@ -151,10 +153,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
                 <h2>Education</h2>
                 {eduText.map(item => {
                     if (item == eduText[eduText.length - 1]) { // Don't add <hr /> to the last item.
-                        return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />;
+                        return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} buttonStatus={buttonStatus} />;
                     } else {
                         return <Fragment key={item.id}>
-                            <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />
+                            <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} buttonStatus={buttonStatus} />
                             <hr />
                         </Fragment>;
                     }
@@ -164,10 +166,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
                 <h2>Work</h2>
                 {workText.map(item => {
                     if (item == workText[workText.length - 1]) { // Don't add <hr /> to the last item.
-                        return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />;
+                        return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} buttonStatus={buttonStatus} />;
                     } else {
                         return <Fragment key={item.id}>
-                            <RenderWork item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />
+                            <RenderWork item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} buttonStatus={buttonStatus} />
                             <hr />
                         </Fragment>;
                     }
@@ -181,6 +183,7 @@ function CVContainer() {
     const [genInfo, setGenInfo] = useState({ name: '', email: '', phone: '', location: '', about: '' });
     const [eduInfo, setEduInfo] = useState([]);
     const [workInfo, setWorkInfo] = useState([]);
+    const [buttonToggle, setButtonToggle] = useState('Hide');
 
     function handleGenInfoChange(e) {
         const newGenInfo = { ...genInfo, [e.target.id]: e.target.value };
@@ -251,9 +254,25 @@ function CVContainer() {
         contentRef: componentRef,
     });
 
+    function toggleButtons() {
+        const allButtons = document.getElementsByClassName('buttons-display');
+        
+        for (let i = 0; i < allButtons.length; i++) {
+            allButtons[i].classList.toggle('buttons-hide');
+        }
+
+        if (buttonToggle == 'Hide') {
+            setButtonToggle('Show');
+        } else {
+            setButtonToggle('Hide');
+        }
+    }
+
     return (
         <>
-            <button className="button button-right" onClick={() => handlePrint()}>Print CV</button>
+            <div className="full button-right">
+                <button className="button" onClick={toggleButtons}>{buttonToggle} Buttons</button> <button className="button" onClick={handlePrint}>Print CV</button>
+            </div>
             <div className="container">
                 <div className="left-container">
                     <LeftSide
@@ -271,6 +290,7 @@ function CVContainer() {
                         onEduDelete={handleEduInfoDelete}
                         onWorkEdit={handleWorkInfoEdit}
                         onWorkDelete={handleWorkInfoDelete}
+                        buttonToggle={buttonToggle}
                     />
                 </div>
             </div>

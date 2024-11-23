@@ -31,4 +31,12 @@ function cancelEditInfo(item) { // Hide the form and display the information.
     document.getElementById(item.id + '-2').style.display = 'none';
 }
 
-export { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo };
+function showOrHide(buttonToggle) {
+    if (buttonToggle == 'Show') {
+        return 'full buttons-display buttons-hide';
+    } else {
+        return 'full buttons-display';
+    }
+}
+
+export { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo, showOrHide };

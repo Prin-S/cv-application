@@ -157,7 +157,9 @@ hr {
 }
 
 .button-right {
-    margin-right: 15px;
-    margin-left: auto;
-    display: block;
+    text-align: right;
+}
+
+.buttons-hide {
+    display: none;
 }
