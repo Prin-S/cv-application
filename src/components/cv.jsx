@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../styles/styles.css';
 
-const yearRegex = /(19|20)([0-9]{2})/;
+const yearRegex = /^(19|20)([0-9]{2})$/;
 
 function checkStart(e) {
     if (!e.target.value.match(yearRegex)) {
@@ -11,10 +11,22 @@ function checkStart(e) {
 }
 
 function checkEnd(e) {
-    if (e.target.value == 'present' || e.target.value.match(yearRegex)) {
+    if (e.target.value == 'present') {
         return e.target.setCustomValidity('');
+    } else if (!e.target.value.match(yearRegex)) {
+        return e.target.setCustomValidity('Value must be 1900-2099. Enter "present" if this is current.');
     }
-    return e.target.setCustomValidity('Value must be 1900-2099. Enter "present" if this is current.');      
+    return e.target.setCustomValidity('');
+}
+
+function editInfo(item) { // Hide the displayed information while it is being edited.
+    document.getElementById(item.id + '-1').style.display = 'none';
+    document.getElementById(item.id + '-2').style.display = 'block';
+}
+
+function cancelEditInfo(item) { // Hide the form and display the information.
+    document.getElementById(item.id + '-1').style.display = 'block';
+    document.getElementById(item.id + '-2').style.display = 'none';
 }
 
 function GeneralInformation({ id, text, type, onChange }) {
@@ -25,32 +37,32 @@ function GeneralInformation({ id, text, type, onChange }) {
     );
 }
 
-function EducationInformation({ onSubmit }) {
+function EducationInformation({ onEduSubmit }) {
     return (
         <div className="box form-box">
             <h2>Education</h2>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onEduSubmit}>
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" required /></label><br />
-                <label htmlFor="start">Start date: <input id="start" className="input" type="text" onChange={checkStart} name="start" required /></label><br />
-                <label htmlFor="end">End date: <input id="end" className="input" type="text" onChange={checkEnd} name="end" required /></label><br /><br />
+                <label htmlFor="edu-start">Start year: <input id="edu-start" className="input" type="text" onChange={checkStart} name="edu-start" required /></label><br />
+                <label htmlFor="edu-end">End year: <input id="edu-end" className="input" type="text" onChange={checkEnd} name="edu-end" required /></label><br /><br />
                 <button className="button" type="submit">Add</button>
             </form>
         </div>
     );
 }
 
-function WorkInformation({ onSubmit }) {
+function WorkInformation({ onWorkSubmit }) {
     return (
         <div className="box form-box">
             <h2>Work</h2>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onWorkSubmit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" required /></label><br />
                 <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" required /></label><br />
                 <label htmlFor="description">Description: <textarea id="description" className="input" rows="4" name="description" required></textarea></label><br />
-                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" required /></label><br />
-                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" required /></label><br /><br />
+                <label htmlFor="work-start">Start year: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" required /></label><br />
+                <label htmlFor="work-end">End year: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" required /></label><br /><br />
                 <button className="button" type="submit">Add</button>
             </form>
         </div>
@@ -68,46 +80,36 @@ function LeftSide({ onGenChange, onEduSubmit, onWorkSubmit }) {
                     <GeneralInformation id="phone" text="Phone number" type="tel" onChange={onGenChange} />
                 </form>
             </div>
-            <EducationInformation onSubmit={onEduSubmit} />
-            <WorkInformation onSubmit={onWorkSubmit} />
+            <EducationInformation onEduSubmit={onEduSubmit} />
+            <WorkInformation onWorkSubmit={onWorkSubmit} />
         </div>
     );
 }
 
 function EditEducationInformation({ item, onEduEdit }) {
-    function cancelEditEduInfo() { // Hide the form and display the information.
-        document.getElementById(item.id + '-1').style.display = 'block';
-        document.getElementById(item.id + '-2').style.display = 'none';
-    }
-
     return (
         <div className="box form-box edit-box">
             <form id={item.id} onSubmit={onEduEdit}>
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
                 <label htmlFor="field">Field of study: <input id="field" className="input" type="text" name="field" defaultValue={item.field} required /></label><br />
-                <label htmlFor="start">Start year: <input id="start" className="input" type="text" onChange={checkStart} name="start" defaultValue={item.start} required /></label><br />
-                <label htmlFor="end">End year: <input id="end" className="input" type="text" onChange={checkEnd} name="end" defaultValue={item.end} required /></label><br /><br />
-                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditEduInfo}>Cancel</button>
+                <label htmlFor="edu-start">Start year: <input id="edu-start" className="input" type="text" onChange={checkStart} name="edu-start" defaultValue={item['edu-start']} required /></label><br />
+                <label htmlFor="edu-end">End year: <input id="edu-end" className="input" type="text" onChange={checkEnd} name="edu-end" defaultValue={item['edu-end']} required /></label><br /><br />
+                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={() => cancelEditInfo(item)}>Cancel</button>
             </form>
         </div>
     );
 }
 
-function RenderEducation({ item, onEduEdit, onClick }) {
-    function editEduInfo() { // Hide the displayed information while it is being edited.
-        document.getElementById(item.id + '-1').style.display = 'none';
-        document.getElementById(item.id + '-2').style.display = 'block';
-    }
-
+function RenderEducation({ item, onEduEdit, onEduDelete }) {
     return (
         <>
             <div id={item.id + '-1'}>
                 <div className="each-entry">
                     <h3 className="full">{item.university}</h3>
-                    <p className="one-fifth">{item.start}-{item.end}</p>
+                    <p className="one-fifth">{item['edu-start']}-{item['edu-end']}</p>
                     <p className="four-fifths">{item.degree} in {item.field}</p>
-                    <div className="full"><button id={item.id} className="button" onClick={editEduInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button></div>
+                    <div className="full"><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onEduDelete}>x</button></div>
                 </div>
             </div>
             <div id={item.id + '-2'} style={{display: 'none'}}>
@@ -118,31 +120,21 @@ function RenderEducation({ item, onEduEdit, onClick }) {
 }
 
 function EditWorkInformation({ item, onWorkEdit }) {
-    function cancelEditWorkInfo() { // Hide the form and display the information.
-        document.getElementById(item.id + '-1').style.display = 'block';
-        document.getElementById(item.id + '-2').style.display = 'none';
-    }
-
     return (
         <div className="box form-box edit-box">
             <form id={item.id} onSubmit={onWorkEdit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" defaultValue={item.position} required /></label><br />
                 <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" defaultValue={item['com-org']} required /></label><br />
                 <label htmlFor="description">Description: <textarea id="description" className="input" rows="4" name="description" defaultValue={item.description} required></textarea></label><br />
-                <label htmlFor="work-start">Start date: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" defaultValue={item['work-start']} required /></label><br />
-                <label htmlFor="work-end">End date: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" defaultValue={item['work-end']} required /></label><br /><br />
-                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={cancelEditWorkInfo}>Cancel</button>
+                <label htmlFor="work-start">Start year: <input id="work-start" className="input" type="text" onChange={checkStart} name="work-start" defaultValue={item['work-start']} required /></label><br />
+                <label htmlFor="work-end">End year: <input id="work-end" className="input" type="text" onChange={checkEnd} name="work-end" defaultValue={item['work-end']} required /></label><br /><br />
+                <button className="button" type="submit">Save</button> <button className="button" type="reset" onClick={() => cancelEditInfo(item)}>Cancel</button>
             </form>
         </div>
     );
 }
 
-function RenderWork({ item, onWorkEdit, onClick }) {
-    function editWorkInfo() { // Hide the displayed information while it is being edited.
-        document.getElementById(item.id + '-1').style.display = 'none';
-        document.getElementById(item.id + '-2').style.display = 'block';
-    }
-
+function RenderWork({ item, onWorkEdit, onWorkDelete }) {
     return (
         <>
             <div id={item.id + '-1'}>
@@ -151,7 +143,7 @@ function RenderWork({ item, onWorkEdit, onClick }) {
                     <p className="one-fifth">{item['work-start']}-{item['work-end']}</p>
                     <p className="four-fifths">{item['com-org']}</p>
                     <p className="full">{item.description}</p>
-                    <div className="full"><button id={item.id} className="button" onClick={editWorkInfo}>Edit</button> <button id={item.id} className="button" onClick={onClick}>x</button></div>
+                    <div className="full"><button id={item.id} className="button" onClick={() => editInfo(item)}>Edit</button> <button id={item.id} className="button" onClick={onWorkDelete}>x</button></div>
                 </div>
             </div>
             <div id={item.id + '-2'} style={{display: 'none'}}>
@@ -172,10 +164,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
             <div className="box">
                 {eduText.map(item => {
                     if (item == eduText[eduText.length - 1]) {
-                        return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />;
+                        return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />;
                     } else {
                         return <>
-                            <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onClick={onEduDelete} />
+                            <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />
                             <hr />
                         </>;
                     }
@@ -184,10 +176,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
             <div className="box">
                 {workText.map(item => {
                     if (item == workText[workText.length - 1]) {
-                        return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onClick={onWorkDelete} />;
+                        return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />;
                     } else {
                         return <>
-                            <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onClick={onWorkDelete} />
+                            <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />
                             <hr />
                         </>;
                     }
@@ -209,8 +201,8 @@ function CVContainer() {
 
     function handleEduInfoSubmit(e) {
         e.preventDefault();
-        const newEduInfo = [ ...eduInfo, { id: crypto.randomUUID(), university: e.target[0].value, degree: e.target[1].value, field: e.target[2].value, start: e.target[3].value, end: e.target[4].value } ];
-        newEduInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
+        const newEduInfo = [ ...eduInfo, { id: crypto.randomUUID(), university: e.target[0].value, degree: e.target[1].value, field: e.target[2].value, 'edu-start': e.target[3].value, 'edu-end': e.target[4].value } ];
+        newEduInfo.sort((a, b) => b['edu-start'] - a['edu-start']); // Sort the start year to show the latest year on top.
         setEduInfo(newEduInfo);
         e.target.reset();
     }
@@ -226,11 +218,11 @@ function CVContainer() {
         itemToEdit.university = e.target[0].value;
         itemToEdit.degree = e.target[1].value;
         itemToEdit.field = e.target[2].value;
-        itemToEdit.start = e.target[3].value;
-        itemToEdit.end = e.target[4].value;
+        itemToEdit['edu-start'] = e.target[3].value;
+        itemToEdit['edu-end'] = e.target[4].value;
         
         const newEduInfo = [ ...eduInfo.filter(item => item.id != e.target.id), itemToEdit ];
-        newEduInfo.sort((a, b) => b.start - a.start); // Sort the start year to show the latest year on top.
+        newEduInfo.sort((a, b) => b['edu-start'] - a['edu-start']); // Sort the start year to show the latest year on top.
         setEduInfo(newEduInfo);
     }
 
