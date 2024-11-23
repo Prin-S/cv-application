@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { checkStart, checkEnd, editInfo, cancelEditInfo } from './helper.js';
+import { useState, Fragment } from 'react';
+import { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo } from './helper.js';
 import '../styles/styles.css';
 
 function GeneralInformation({ id, text, type, onChange }) {
@@ -139,10 +139,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
                     if (item == eduText[eduText.length - 1]) {
                         return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />;
                     } else {
-                        return <>
+                        return <Fragment key={item.id}>
                             <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />
                             <hr />
-                        </>;
+                        </Fragment>;
                     }
                 })}
             </div>
@@ -151,10 +151,10 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
                     if (item == workText[workText.length - 1]) {
                         return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />;
                     } else {
-                        return <>
-                            <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />
+                        return <Fragment key={item.id}>
+                            <RenderWork item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />
                             <hr />
-                        </>;
+                        </Fragment>;
                     }
                 })}
             </div>
@@ -182,10 +182,7 @@ function CVContainer() {
 
     function handleEduInfoEdit(e) {
         e.preventDefault();
-
-        // Hide the form and display the information.
-        document.getElementById(e.target.id + '-1').style.display = 'block';
-        document.getElementById(e.target.id + '-2').style.display = 'none';
+        hideAfterEditInfo(e);
 
         const itemToEdit = eduInfo.find(item => item.id == e.target.id); // Update the existing entry.
         itemToEdit.university = e.target[0].value;
@@ -214,10 +211,7 @@ function CVContainer() {
 
     function handleWorkInfoEdit(e) {
         e.preventDefault();
-
-        // Hide the form and display the information.
-        document.getElementById(e.target.id + '-1').style.display = 'block';
-        document.getElementById(e.target.id + '-2').style.display = 'none';
+        hideAfterEditInfo(e);
 
         const itemToEdit = workInfo.find(item => item.id == e.target.id); // Update the existing entry.
         itemToEdit.position = e.target[0].value;

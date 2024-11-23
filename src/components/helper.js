@@ -21,9 +21,14 @@ function editInfo(item) { // Hide the displayed information while it is being ed
     document.getElementById(item.id + '-2').style.display = 'block';
 }
 
+function hideAfterEditInfo(e) { // Hide the form and display the information.
+    document.getElementById(e.target.id + '-1').style.display = 'block';
+    document.getElementById(e.target.id + '-2').style.display = 'none';
+}
+
 function cancelEditInfo(item) { // Hide the form and display the information.
     document.getElementById(item.id + '-1').style.display = 'block';
     document.getElementById(item.id + '-2').style.display = 'none';
 }
 
-export { checkStart, checkEnd, editInfo, cancelEditInfo };
+export { checkStart, checkEnd, editInfo, hideAfterEditInfo, cancelEditInfo };
