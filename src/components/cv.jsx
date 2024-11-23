@@ -250,8 +250,9 @@ function CVContainer() {
 
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
-        documentTitle: `CV - ${genInfo.name}`,
         contentRef: componentRef,
+        documentTitle: `CV - ${genInfo.name}`,
+        pageStyle: '.right-container { width: 100%; margin-left: auto; margin-right: auto; }',
     });
 
     function toggleButtons() {
