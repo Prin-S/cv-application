@@ -12,7 +12,7 @@ function GeneralInformation({ id, text, type, onChange }) {
 
 function EducationInformation({ onEduSubmit }) {
     return (
-        <div className="box form-box">
+        <div className="box text-left">
             <h2>Education</h2>
             <form onSubmit={onEduSubmit}>
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" required /></label><br />
@@ -28,7 +28,7 @@ function EducationInformation({ onEduSubmit }) {
 
 function WorkInformation({ onWorkSubmit }) {
     return (
-        <div className="box form-box">
+        <div className="box text-left">
             <h2>Work</h2>
             <form onSubmit={onWorkSubmit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" required /></label><br />
@@ -45,7 +45,7 @@ function WorkInformation({ onWorkSubmit }) {
 function LeftSide({ onGenChange, onEduSubmit, onWorkSubmit }) {
     return (
         <div className="container container-inner">
-            <div className="box form-box">
+            <div className="box text-left">
                 <h2>General Information</h2>
                 <form>
                     <GeneralInformation id="name" text="Name" type="text" onChange={onGenChange} />
@@ -61,7 +61,7 @@ function LeftSide({ onGenChange, onEduSubmit, onWorkSubmit }) {
 
 function EditEducationInformation({ item, onEduEdit }) {
     return (
-        <div className="box form-box edit-box">
+        <div className="box text-left edit-box">
             <form id={item.id} onSubmit={onEduEdit}>
                 <label htmlFor="university">University: <input id="university" className="input" type="text" name="university" defaultValue={item.university} required /></label><br />
                 <label htmlFor="degree">Degree: <input id="degree" className="input" type="text" name="degree" defaultValue={item.degree} required /></label><br />
@@ -94,7 +94,7 @@ function RenderEducation({ item, onEduEdit, onEduDelete }) {
 
 function EditWorkInformation({ item, onWorkEdit }) {
     return (
-        <div className="box form-box edit-box">
+        <div className="box text-left edit-box">
             <form id={item.id} onSubmit={onWorkEdit}>
                 <label htmlFor="position">Position: <input id="position" className="input" type="text" name="position" defaultValue={item.position} required /></label><br />
                 <label htmlFor="com-org">Company/Organization: <input id="com-org" className="input" type="text" name="com-org" defaultValue={item['com-org']} required /></label><br />
@@ -130,13 +130,14 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
     return (
         <div className="container container-inner">
             <div className="box">
-                <p>Name: {genText.name}</p>
-                <p>Email: {genText.email}</p>
-                <p>Phone: {genText.phone}</p>
+                <h2>{genText.name}</h2>
+                <p>{genText.email}</p>
+                <p>{genText.phone}</p>
             </div>
             <div className="box">
+                <h2>Education</h2>
                 {eduText.map(item => {
-                    if (item == eduText[eduText.length - 1]) {
+                    if (item == eduText[eduText.length - 1]) { // Don't add <hr /> to the last item.
                         return <RenderEducation key={item.id} item={item} onEduEdit={onEduEdit} onEduDelete={onEduDelete} />;
                     } else {
                         return <Fragment key={item.id}>
@@ -147,8 +148,9 @@ function RightSide({ genText, eduText, workText, onEduEdit, onEduDelete, onWorkE
                 })}
             </div>
             <div className="box">
+                <h2>Work</h2>
                 {workText.map(item => {
-                    if (item == workText[workText.length - 1]) {
+                    if (item == workText[workText.length - 1]) { // Don't add <hr /> to the last item.
                         return <RenderWork key={item.id} item={item} onWorkEdit={onWorkEdit} onWorkDelete={onWorkDelete} />;
                     } else {
                         return <Fragment key={item.id}>
@@ -232,20 +234,24 @@ function CVContainer() {
 
     return (
         <div className="container">
-            <LeftSide
-                onGenChange={handleGenInfoChange}
-                onEduSubmit={handleEduInfoSubmit}
-                onWorkSubmit={handleWorkInfoSubmit}
-            />
-            <RightSide
-                genText={genInfo}
-                eduText={eduInfo}
-                workText={workInfo}
-                onEduEdit={handleEduInfoEdit}
-                onEduDelete={handleEduInfoDelete}
-                onWorkEdit={handleWorkInfoEdit}
-                onWorkDelete={handleWorkInfoDelete}
-            />
+            <div className="left-container">
+                <LeftSide
+                    onGenChange={handleGenInfoChange}
+                    onEduSubmit={handleEduInfoSubmit}
+                    onWorkSubmit={handleWorkInfoSubmit}
+                />
+            </div>
+            <div className="right-container">
+                <RightSide
+                    genText={genInfo}
+                    eduText={eduInfo}
+                    workText={workInfo}
+                    onEduEdit={handleEduInfoEdit}
+                    onEduDelete={handleEduInfoDelete}
+                    onWorkEdit={handleWorkInfoEdit}
+                    onWorkDelete={handleWorkInfoDelete}
+                />
+            </div>
         </div>
     );
 }
